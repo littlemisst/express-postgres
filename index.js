@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 const express = require('express')
+const cors = require('cors')
 const app = express() // initializing
 
 const bodyParser = require('body-parser')
@@ -17,6 +18,8 @@ const pool = new Pool({
     port: process.env.port
 })
 
+app.use(cors({
+    origin: ["http://localhost:5173"]}));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
     extended: true
@@ -50,7 +53,7 @@ app.get('/get-user/:id', (request, response) => {
 
 // post 
 app.post('/add-user', (request, response) => {
-    const {name, email} = request.body
+    const { name, email } = request.body
 
     pool.query('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email], (error, results) => {
         if (error) {
@@ -63,7 +66,7 @@ app.post('/add-user', (request, response) => {
 // put  
 app.put('/update-user/:id', (request, response) => {
     const id = request.params.id
-    const { name } = request.body
+    const { name, email } = request.body
 
     pool.query('UPDATE users SET name = $1, email = $2 WHERE user_id = $3', [name, email, id], (error, results) => {
         if (error) {
